@@ -1,0 +1,6 @@
+[submodule "packages/qiskit-metal"]
+	path = packages/qiskit-metal
+	url = git@github.com:abhishekchak52/qiskit-metal.git
+[submodule "packages/pyEPR"]
+	path = packages/pyEPR
+	url = git@github.com:abhishekchak52/pyEPR.git
