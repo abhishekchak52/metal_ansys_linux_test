@@ -1,19 +1,26 @@
 [project]
-name = "metal-ansys-test"
+name = "metal-ansys-linux-test"
 version = "0.1.0"
-description = "Add your description here"
+description = "Testing Quantum Metal and Ansys on Linux"
 readme = "README.md"
 requires-python = ">=3.11,<3.13"
 dependencies = [
     "ipykernel>=7.1.0",
     "quantum-metal",
+    "pyEPR-quantum",
+    "jupyterlab>=4.5.0",
+    "pyrefly>=0.45.2",
+    "pyvista>=0.46.4",
+]
+
+[tool.pyrefly]
+project-includes = [
+    "**/*.py*",
+    "**/*.ipynb",
 ]
 
 
 [tool.uv.sources]
-    quantum-metal = { workspace = true }
+    quantum-metal = { path = "packages/qiskit-metal", editable = true }
+    pyEPR-quantum = { path = "packages/pyEPR", editable = true }
 
-[tool.uv.workspace]
-members = [
-    "packages/qiskit-metal",
-]
