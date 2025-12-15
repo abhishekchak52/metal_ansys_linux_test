@@ -13,6 +13,14 @@ Run the following command in the root of the repository. This will open the tuto
 uv run jupyter lab packages/qiskit-metal/tutorials
 ```
 
+For now, I've tested the following tutorial notebooks: 
+
+- 3.3 Render your design to Ansys
+- 4.01 Capacitance and LOM
+- 4.02 Eigenmode and EPR
+
+Note that not all cells should be run in the notebooks listed above. Please follow the text instructions in the notebooks. 
+
 To update various package dependencies, run the following command from the root of this repository:
 
 ```
