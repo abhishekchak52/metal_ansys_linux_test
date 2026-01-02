@@ -25,5 +25,5 @@ project-includes = [
 [tool.uv.sources]
     quantum-metal = { path = "packages/qiskit-metal", editable = true }
     pyEPR-quantum = { path = "packages/pyEPR", editable = true }
-    squadds = { path = "packages/squadds", editable = true }
+    squadds = { path = "packages/SQuADDS", editable = true }
 
