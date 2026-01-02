@@ -4,3 +4,6 @@
 [submodule "packages/pyEPR"]
 	path = packages/pyEPR
 	url = https://github.com/abhishekchak52/pyEPR.git
+[submodule "ML_qubit_design"]
+	path = ML_qubit_design
+	url = https://github.com/abhishekchak52/ML_qubit_design.git
