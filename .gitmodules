@@ -7,3 +7,6 @@
 [submodule "ML_qubit_design"]
 	path = ML_qubit_design
 	url = https://github.com/abhishekchak52/ML_qubit_design.git
+[submodule "packages/SQuADDS"]
+	path = packages/SQuADDS
+	url = https://github.com/abhishekchak52/SQuADDS.git

@@ -6,11 +6,13 @@ readme = "README.md"
 requires-python = ">=3.11,<3.13"
 dependencies = [
     "ipykernel>=7.1.0",
-    "quantum-metal",
-    "pyEPR-quantum",
     "jupyterlab>=4.5.0",
     "pyrefly>=0.45.2",
     "pyvista>=0.46.4",
+    # Local packages
+    "quantum-metal",
+    "pyEPR-quantum",
+    "squadds",
 ]
 
 [tool.pyrefly]
@@ -23,4 +25,5 @@ project-includes = [
 [tool.uv.sources]
     quantum-metal = { path = "packages/qiskit-metal", editable = true }
     pyEPR-quantum = { path = "packages/pyEPR", editable = true }
+    squadds = { path = "packages/squadds", editable = true }
 
