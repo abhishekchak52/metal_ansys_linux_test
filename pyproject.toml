@@ -9,6 +9,7 @@ dependencies = [
     "jupyterlab>=4.5.0",
     "pyrefly>=0.45.2",
     "pyvista>=0.46.4",
+    "pyaedt<0.24.0", # Pinned because 0.24.0 breaks things.  
     # Local packages
     "quantum-metal",
     "pyEPR-quantum",

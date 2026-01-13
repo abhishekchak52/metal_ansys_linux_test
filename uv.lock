@@ -1565,6 +1565,7 @@ source = { virtual = "." }
 dependencies = [
     { name = "ipykernel" },
     { name = "jupyterlab" },
+    { name = "pyaedt" },
     { name = "pyepr-quantum" },
     { name = "pyrefly" },
     { name = "pyvista" },
@@ -1576,6 +1577,7 @@ dependencies = [
 requires-dist = [
     { name = "ipykernel", specifier = ">=7.1.0" },
     { name = "jupyterlab", specifier = ">=4.5.0" },
+    { name = "pyaedt", specifier = "<0.24.0" },
     { name = "pyepr-quantum", editable = "packages/pyEPR" },
     { name = "pyrefly", specifier = ">=0.45.2" },
     { name = "pyvista", specifier = ">=0.46.4" },
@@ -2156,7 +2158,7 @@ wheels = [
 
 [[package]]
 name = "pyaedt"
-version = "0.24.1"
+version = "0.23.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "defusedxml" },
@@ -2169,9 +2171,9 @@ dependencies = [
     { name = "pyyaml" },
     { name = "tomli-w" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/59/0b/bd7352e6ae6ca25a4213f77eca629d150b9916ce7b74b6f245886001fb8b/pyaedt-0.24.1.tar.gz", hash = "sha256:30f90616fa45abd5e8e235e8990ebb9bda66ffbfbbd09515ff690708f9bff87c", size = 26759961, upload-time = "2026-01-13T14:28:34.318Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/9c/d8/5769707ed9005b9b4f3d50cb9d859ba4574cdca2b4393be7507a01082047/pyaedt-0.23.0.tar.gz", hash = "sha256:7acb745cb6519d2cf3a39b9ced77f65ae18fb512fce9a3d2931575774b1ee536", size = 26879213, upload-time = "2025-11-27T19:31:34.602Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/75/86/a83f99ce5bf7c89c23be4be54d8f758cf90daac8b33c31414dd9675b1a99/pyaedt-0.24.1-py3-none-any.whl", hash = "sha256:8ba8c19d4e078224a71d183340606c1449409b49f2878a3a1b8008ebe543282a", size = 7714751, upload-time = "2026-01-13T14:28:31.65Z" },
+    { url = "https://files.pythonhosted.org/packages/e6/7d/bbc3f5f10da10a0e195da17c381b74fe2f28c09207f8e74e441e90b84432/pyaedt-0.23.0-py3-none-any.whl", hash = "sha256:c421d1b529a99ac96753a67d790a2827cf76f36d27b48a29834f9a7e73c7346d", size = 7664478, upload-time = "2025-11-27T19:31:31.971Z" },
 ]
 
 [[package]]
