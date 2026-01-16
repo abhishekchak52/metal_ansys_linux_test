@@ -3,7 +3,7 @@
 This repository uses [Git submodules](https://git-scm.com/book/en/v2/Git-Tools-Submodules) to maintain local copies of Quantum Metal and pyEPR for easy development and troubleshooting. Both these dependencies will be installed as editable in the project virtual environment. Use the following command to clone the repository and its submodules:
 
 ```
-git clone --recurse-submodules https://www.github.com/abhishekchak52/quantum-metal-ansys-testing.git
+git clone --recurse-submodules https://www.github.com/abhishekchak52/metal_ansys_linux_test.git
 ```
 
 We use uv to manage dependencies for this project. First install `uv` on your system ([installation instructions here](https://docs.astral.sh/uv/getting-started/installation/)). 
