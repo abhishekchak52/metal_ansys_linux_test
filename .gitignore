@@ -11,3 +11,4 @@ wheels/
 
 # Ansys logs
 **/batch.log
+**/.ipynb_checkpoints/
