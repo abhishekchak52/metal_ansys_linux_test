@@ -20,7 +20,7 @@ pred_df = analyzer.find_closest(target_params=target_params,
                                        metric="Euclidean",
                                        display=True)
 
-ML_results = pd.read_csv("predictions_and_errors_unscaled_one_hot.csv") # real in ML test results
+ML_results = pd.read_csv("notebooks/predictions_and_errors_unscaled_one_hot.csv") # real in ML test results
 
 sample = 0 # choose testing device from ML results
 this_device = ML_results[ML_results.sample_idx == sample]
