@@ -12,11 +12,11 @@ dependencies = [
     # Local packages
     "quantum-metal",
     "pyEPR-quantum",
-    "squadds",
+    "squadds>=0.4.3",
 ]
 
-[tool.pyrefly]
-project-includes = [
+[tool.ty.src]
+exclude = [
     "**/*.py*",
     "**/*.ipynb",
 ]
@@ -25,5 +25,5 @@ project-includes = [
 [tool.uv.sources]
     quantum-metal = { path = "packages/qiskit-metal", editable = true }
     pyEPR-quantum = { path = "packages/pyEPR", editable = true }
-    squadds = { path = "packages/SQuADDS", editable = true }
+    # squadds = { path = "packages/SQuADDS", editable = true } # Using published release
 
