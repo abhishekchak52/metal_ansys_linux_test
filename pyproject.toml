@@ -9,10 +9,10 @@ dependencies = [
     "jupyterlab>=4.5.0",
     "pyvista>=0.46.4",
     "pyaedt<0.24.0", # Pinned because 0.24.0 breaks things.  
+    "squadds>=0.4.3",
     # Local packages
     "quantum-metal",
     "pyEPR-quantum",
-    "squadds>=0.4.3",
 ]
 
 [tool.ty.src]
