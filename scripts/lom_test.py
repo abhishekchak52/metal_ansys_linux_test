@@ -85,7 +85,7 @@ c1.sim.setup_update(solution_order = 'Medium', auto_increase_solution_order = 'F
 
 try:   
     c1.sim.run(components=['Q1'], open_terminations=[('Q1', 'readout'), ('Q1', 'bus1'), ('Q1', 'bus2')])
-    print(c1.sim.capacitance_matrix*1e3)
+    print(c1.sim.capacitance_matrix)
 except Exception as e:
     traceback.print_exc()
 finally:
