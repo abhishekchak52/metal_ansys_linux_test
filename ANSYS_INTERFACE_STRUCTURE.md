@@ -1,6 +1,6 @@
 # Ansys interface structure (pyEPR)
 
-**Document status:** Last updated after pyaedt parity refactor (HfssDesign create_*_setup, OpenPolyline, HfssModeler full COM parity). `ansys.py` removed; `ansys/` package and `PYEPR_USE_PYAEDT` dispatch in place. **Section 9.6** is the handoff summary for the next stage of refactoring.
+**Document status:** Last updated after HfssApp refactor into hfss_desktop (hfss_app.py removed). Pyaedt parity refactor (HfssDesign create_*_setup, OpenPolyline, HfssModeler full COM parity) and `ansys/` package with `PYEPR_USE_PYAEDT` dispatch are in place. **Section 9.6** is the handoff summary for the next stage of refactoring.
 
 This document describes the structure and coupling of the pyEPR Ansys interface, based on **ansys_com.py** (COM-only implementation). It documents the current state after refactor and serves as a starting point for the next phase.
 
@@ -19,8 +19,7 @@ This document describes the structure and coupling of the pyEPR Ansys interface,
 | `_backend.py` | Backend detection, `PYEPR_USE_PYAEDT` handling, `get_available_backends`, `get_backend`, `set_backend`, `using_pyaedt`, `using_com` |
 | `_units.py` | Constants, `ureg`, `Q`, unit/expr helpers, `VariableString`, `var` |
 | `_wrapper.py` | `COMWrapper`, `HfssPropertyObject`, `_unwrap_aedt_handle`, `make_*_prop`, `set_property`, `release`, `_add_release_fn` |
-| `hfss_app.py` | `HfssApp` (pyaedt) |
-| `hfss_desktop.py` | `HfssDesktop` |
+| `hfss_desktop.py` | `HfssApp`, `HfssDesktop` |
 | `hfss_project.py` | `HfssProject` |
 | `_reporter.py` | `_ReporterWrapper` (ExportToFile gRPC compatibility) |
 | `hfss_design.py` | `HfssDesign` |
@@ -146,7 +145,7 @@ Use this section to avoid repeating mistakes in future refactors.
   - **hfss_project ↔ hfss_design:** `HfssProject` needs `HfssDesign` for `get_designs()`, `get_design()`, `get_active_design()`, `new_design()`. Do not use a top-level import of `HfssDesign` in `hfss_project.py`; use a **lazy import** inside those methods (`from .hfss_design import HfssDesign`).
   - **hfss_setup ↔ hfss_fields_calc:** `HfssSetup.get_fields()` returns `HfssFieldsCalc(self)`; `add_fields_convergence_expr` uses `NamedCalcObject`. Import `HfssFieldsCalc` and `NamedCalcObject` **inside** those methods to avoid cycles.
   - **hfss_fields_calc → hfss_setup:** `hfss_fields_calc` imports `HfssDMSetup` from `hfss_setup` for `isinstance(self.setup, HfssDMSetup)` in `CalcObject.evaluate()`. This is safe because `hfss_setup` does not import `hfss_fields_calc` at top level.
-  - **Import order in ansys/__init__.py (pyaedt path):** Load `_backend`, `_units`, `_wrapper` first; then app → desktop → project → design; then setup, design_solutions, frequency_sweep, report, optimetrics, modeler, model_entity, fields_calc; then load. Do not import design before its dependencies (setup, modeler, etc.).
+  - **Import order in ansys/__init__.py (pyaedt path):** Load `_backend`, `_units`, `_wrapper` first; then `hfss_desktop` (HfssApp, HfssDesktop) → project → design; then setup, design_solutions, frequency_sweep, report, optimetrics, modeler, model_entity, fields_calc; then load. Do not import design before its dependencies (setup, modeler, etc.).
 
 - **Backend resolution**
   - Backend is set once when `_backend` is first imported (`_resolve_backend_from_env()` runs at end of `_backend.py`). Changing `PYEPR_USE_PYAEDT` after `import pyEPR.ansys` has no effect; the process must be restarted (or the backend switched via `set_backend()` if both are available).
@@ -175,7 +174,7 @@ Use this section as a starting point for the next phase.
 - **API parity:** Compare pyaedt module behavior with ansys_com (and the old dual-backend ansys.py) for key workflows (open project, run setup, export report, field calcs, Q3D matrix export). Some pyaedt modules were condensed (e.g. HfssModeler, Polyline/OpenPolyline); restore or add any missing methods if needed.
 - **Documentation:** Document `PYEPR_USE_PYAEDT` in user-facing docs (README, installation, or configuration) and in docstrings for `get_backend` / `set_backend`.
 - **Deprecation (optional):** If the long-term goal is pyaedt-only, define a deprecation path for the COM backend and timeline.
-- **Known gaps (optional):** After the refactor below, HfssDesign setup creation, OpenPolyline, and HfssModeler are at parity with COM for the flows used by project_info, qiskit-metal ansys_renderer (Q3D/HFSS), and model_entity. Remaining gaps (if any) are in lesser-used workflows (e.g. CalcObject integration, PyAEDT-native APIs).
+- **Known gaps (optional):** After the refactor below, HfssDesign setup creation, OpenPolyline, HfssModeler, and CalcObject are at parity with COM for the flows used by project_info, qiskit-metal ansys_renderer (Q3D/HFSS), model_entity, and core_distributed_analysis. Remaining gaps (if any) are in lesser-used workflows (e.g. PyAEDT-native APIs).
 
 ### 8.1 HfssDesign API parity status (pyaedt backend)
 
@@ -186,7 +185,13 @@ Use this section as a starting point for the next phase.
 | `create_dt_setup` | Implemented | project_info.connect_setup |
 | `create_q3d_setup` | Implemented | project_info.connect_setup |
 | `delete_setup` | Implemented | (parity) |
-| `get_setup_names`, `get_setup`, `name`, `solution_type`, `modeler`, `get_variable_names`, `get_nominal_variation`, `clean_up_solutions`, `get_fields`, `add_message`, `save_screenshot`, `rename_design`, `copy_to_project`, `duplicate`, `export_report_to_file` | Present | project_info / core_distributed_analysis |
+| `delete_full_variation`, `create_variable`, `_variation_string_to_variable_list`, `set_variables`, `set_variable`, `get_variable_value`, `get_variables`, `copy_design_variables`, `get_excitations`, `_evaluate_variable_expression`, `eval_expr`, `Clear_Field_Clac_Stack` | Implemented | core_distributed_analysis / hfss_modeler / model_entity / parity |
+| `get_variable_names` | Aligned (VariableString list + post-processing vars, try/except for Q3D) | project_info / hfss_setup |
+| `get_setup_names`, `get_setup`, `name`, `solution_type`, `modeler`, `get_nominal_variation`, `clean_up_solutions`, `get_fields`, `add_message`, `save_screenshot`, `rename_design`, `copy_to_project`, `duplicate`, `export_report_to_file` | Present | project_info / core_distributed_analysis |
+
+### 8.2 CalcObject / HfssFieldsCalc parity status (pyaedt backend)
+
+[ansys/hfss_fields_calc.py](packages/pyEPR/pyEPR/ansys/hfss_fields_calc.py) `CalcObject` is now at parity with ansys_com for field calculations used by [core_distributed_analysis](packages/pyEPR/pyEPR/core_distributed_analysis.py). **Added:** `__mag__`, `__div__`/`__rdiv__` (Py3 aliases), `conj`, `scalar_x`/`scalar_y`/`scalar_z`, `norm_2`, `complexmag`, `_integrate`, `_maximum`, `getQty`, `normal2surface`, `tangent2surface`, `integrate_line_tangent`, `line_tangent_coor`, `maximum_vol`, `times_eps`, `times_mu`; refactored `integrate_line`/`integrate_surf`/`integrate_vol` to use `_integrate`; optional `print_debug` branch in `evaluate`. `integrate_line_tangent` and `line_tangent_coor` build new stacks (no mutation of `self.stack`).
 
 ## 9. Refactoring updates (pyaedt parity)
 
@@ -196,8 +201,9 @@ Summary of changes made to the pyaedt subpackage so it matches the COM API used 
 
 - **Added:** `create_q3d_setup`, `create_dm_setup`, `create_dt_setup`, `create_em_setup` — each calls `self._setup_module.InsertSetup(...)` with the same setup type and property arrays as ansys_com (Matrix / HfssDriven / HfssEigen), then returns the corresponding setup wrapper (`AnsysQ3DSetup`, `HfssDMSetup`, `HfssDTSetup`, `HfssEMSetup`).
 - **Added:** `delete_setup(name)` — calls `_setup_module.DeleteSetups(name)` when name is in `get_setup_names()`.
-- **Import:** `increment_name` from `pyEPR.ansys._units` for unique setup names.
-- **Rationale:** `project_info.connect_setup()` creates a default setup when none exists (e.g. Q3D); without these methods, `AttributeError: 'HfssDesign' object has no attribute 'create_q3d_setup'` occurred.
+- **Added (variable/solution/fields parity):** `delete_full_variation`, `create_variable`, `_variation_string_to_variable_list`, `set_variables`, `set_variable`, `get_variable_value`, `get_variables`, `copy_design_variables`, `get_excitations`, `_evaluate_variable_expression`, `eval_expr`, `Clear_Field_Clac_Stack` — COM design calls mirroring ansys_com; `get_variable_names` aligned to return `VariableString` list and include post-processing variables (try/except for Q3D).
+- **Import:** `increment_name` from `pyEPR.ansys._units` for unique setup names; `VariableString`, `Q` from `._units`; `sympy_parser` from `sympy.parsing.sympy_parser` for `eval_expr`.
+- **Rationale:** `project_info.connect_setup()` creates a default setup when none exists (e.g. Q3D); without these methods, `AttributeError: 'HfssDesign' object has no attribute 'create_q3d_setup'` occurred. Variable/set_variables/eval_expr/Clear_Field_Clac_Stack required by `core_distributed_analysis` and `hfss_modeler.eval_expr`.
 
 ### 9.2 OpenPolyline ([ansys/model_entity.py](packages/pyEPR/pyEPR/ansys/model_entity.py))
 
@@ -231,7 +237,7 @@ Summary of changes made to the pyaedt subpackage so it matches the COM API used 
 ### 9.5 Starting the next stage
 
 - **Validation:** Run pyEPR tests and lom_test (and HFSS flows if applicable) with both backends to confirm parity.
-- **Remaining parity:** Compare other classes (e.g. HfssSetup, HfssDesignSolutions, Optimetrics, HfssFieldsCalc) with ansys_com line ranges in Section 5; add any missing methods or fix signature/behavior differences as needed.
+- **Remaining parity:** Compare other classes (e.g. HfssSetup, HfssDesignSolutions, Optimetrics) with ansys_com line ranges in Section 5; add any missing methods or fix signature/behavior differences as needed. HfssFieldsCalc/CalcObject parity is done (Section 8.2).
 - **Docs:** Document `PYEPR_USE_PYAEDT` and backend selection in user-facing docs and in `get_backend` / `set_backend` docstrings.
 
 ### 9.6 Summary for next-stage refactoring (handoff)
@@ -259,5 +265,17 @@ Use this subsection to resume work or hand off to another developer/AI.
 
 **Current status**
 
-- **Done:** HfssDesign setup creation, OpenPolyline parity, and HfssModeler full COM parity. Document status and API parity tables (Sections 8.1, 9.1–9.4) are up to date.
-- **Next:** (1) **Validation** — run `packages/pyEPR/tests/`, `scripts/lom_test.py`, and relevant notebooks with `PYEPR_USE_PYAEDT` set and unset. (2) **Remaining API parity** — compare `HfssSetup`, `HfssDesignSolutions`, `Optimetrics`, `HfssFieldsCalc` (and related) with ansys_com (Section 5 line ranges) and implement any missing methods. (3) **Documentation** — document `PYEPR_USE_PYAEDT` and backend selection in user-facing docs and in `get_backend` / `set_backend` docstrings.
+- **Done:** HfssDesign setup creation, OpenPolyline parity, HfssModeler full COM parity; HfssApp moved into `hfss_desktop.py` and `hfss_app.py` removed (Section 9.7). Document status and API parity tables (Sections 8.1, 9.1–9.4) are up to date.
+- **Next:** (1) **Validation** — run `packages/pyEPR/tests/`, `scripts/lom_test.py`, and relevant notebooks with `PYEPR_USE_PYAEDT` set and unset. (2) **Remaining API parity** — compare `HfssSetup`, `HfssDesignSolutions`, `Optimetrics` (and related) with ansys_com (Section 5 line ranges) and implement any missing methods; CalcObject/HfssFieldsCalc parity is done (Section 8.2). (3) **Documentation** — document `PYEPR_USE_PYAEDT` and backend selection in user-facing docs and in `get_backend` / `set_backend` docstrings.
+
+### 9.7 HfssApp moved into hfss_desktop
+
+- **Change:** All `HfssApp` functionality was moved from `ansys/hfss_app.py` into `ansys/hfss_desktop.py`. `hfss_app.py` was removed.
+- **Imports:** `ansys/__init__.py` and `ansys/load.py` now import `HfssApp` (and in `__init__.py`, `HfssDesktop`) from `hfss_desktop` only.
+- **Public API:** Unchanged; `pyEPR.ansys.HfssApp` and `pyEPR.ansys.HfssDesktop` remain re-exported from the package.
+
+### 9.8 CalcObject ([ansys/hfss_fields_calc.py](packages/pyEPR/pyEPR/ansys/hfss_fields_calc.py))
+
+- **Added:** `__mag__`, `__div__`/`__rdiv__` (aliases to `__truediv__`/`__rtruediv__` for Py3 API parity), `conj`, `scalar_x`/`scalar_y`/`scalar_z`, `norm_2`, `complexmag`, `_integrate`, `_maximum`, `getQty`, `normal2surface`, `tangent2surface`, `integrate_line_tangent`, `line_tangent_coor`, `maximum_vol`, `times_eps`, `times_mu`; optional `print_debug` branch in `evaluate`.
+- **Refactored:** `integrate_line`, `integrate_surf`, `integrate_vol` now delegate to `_integrate(name, type)`.
+- **Rationale:** `core_distributed_analysis` uses `getQty`, `times_eps`, `times_mu`, `conj`, `integrate_line_tangent`, `line_tangent_coor`, `norm_2` (e.g. Vector_Jsurf.norm_2()); without these, field-based EPR workflows fail with the pyaedt backend. `integrate_line_tangent` and `line_tangent_coor` build new stacks (no mutation of `self.stack`) for correct re-use behavior.

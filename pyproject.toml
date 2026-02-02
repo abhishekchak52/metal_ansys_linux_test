@@ -9,10 +9,11 @@ dependencies = [
     "jupyterlab>=4.5.0",
     "pyvista>=0.46.4",
     "pyaedt<0.24.0", # Pinned because 0.24.0 breaks things.  
-    "squadds>=0.4.3",
+    # "squadds>=0.4.3",
     # Local packages
     "quantum-metal",
     "pyEPR-quantum",
+    "squadds",
 ]
 
 [tool.ty.src]
@@ -25,5 +26,5 @@ exclude = [
 [tool.uv.sources]
     quantum-metal = { path = "packages/qiskit-metal", editable = true }
     pyEPR-quantum = { path = "packages/pyEPR", editable = true }
-    # squadds = { path = "packages/SQuADDS", editable = true } # Using published release
+    squadds = { path = "packages/SQuADDS", editable = true } # Using published release
 

@@ -73,20 +73,20 @@ cpw2 = connect('cpw2', 'Q3', 'bus1', 'Q2', 'bus2', '6.1 mm', f'-{asym}um', flip=
 cpw3 = connect('cpw3', 'Q3', 'bus2', 'Q4', 'bus1', '6.0 mm', f'+{asym}um')
 cpw4 = connect('cpw4', 'Q1', 'bus1', 'Q4', 'bus2', '6.1 mm', f'-{asym}um', flip=True)
 
-c1 = LOManalysis(design, "q3d")
+lom1 = LOManalysis(design, "q3d")
 # example: update single setting
-c1.sim.setup.max_passes = 15
-c1.sim.setup.min_passes = 1
-c1.sim.setup.min_converged_passes = 3
+lom1.sim.setup.max_passes = 15
+lom1.sim.setup.min_passes = 1
+lom1.sim.setup.min_converged_passes = 3
 # example: update multiple settings
-c1.sim.setup_update(solution_order = 'Medium', auto_increase_solution_order = 'False')
+lom1.sim.setup_update(solution_order = 'Medium', auto_increase_solution_order = 'False')
 
 
 
 try:   
-    c1.sim.run(components=['Q1'], open_terminations=[('Q1', 'readout'), ('Q1', 'bus1'), ('Q1', 'bus2')])
-    print(c1.sim.capacitance_matrix)
+    lom1.sim.run(components=['Q1'], open_terminations=[('Q1', 'readout'), ('Q1', 'bus1'), ('Q1', 'bus2')])
+    lom1.run_lom()
 except Exception as e:
     traceback.print_exc()
 finally:
-    c1.sim.close()
+    lom1.sim.close()

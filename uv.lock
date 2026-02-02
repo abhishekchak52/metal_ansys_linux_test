@@ -1574,7 +1574,7 @@ requires-dist = [
     { name = "pyepr-quantum", editable = "packages/pyEPR" },
     { name = "pyvista", specifier = ">=0.46.4" },
     { name = "quantum-metal", editable = "packages/qiskit-metal" },
-    { name = "squadds", specifier = ">=0.4.3" },
+    { name = "squadds", editable = "packages/SQuADDS" },
 ]
 
 [[package]]
@@ -3111,7 +3111,7 @@ wheels = [
 [[package]]
 name = "squadds"
 version = "0.4.3"
-source = { registry = "https://pypi.org/simple" }
+source = { editable = "packages/SQuADDS" }
 dependencies = [
     { name = "datasets" },
     { name = "datashader" },
@@ -3140,10 +3140,58 @@ dependencies = [
     { name = "tabulate" },
     { name = "tqdm" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/be/30/3f2bd9d9c41383b7770fd6f8fd699c5f95e03d20eb3718097abc91173b69/squadds-0.4.3.tar.gz", hash = "sha256:2cc9674e8d1d2c821acc35f8a822fad5475fa0ad362b5370a38ccc7d764b5783", size = 104974, upload-time = "2026-01-29T05:22:16.316Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/69/ed/fc1d4947a418f9e608776c8dd8cc03857fcca0047dc02cf5f29956b6af64/squadds-0.4.3-py3-none-any.whl", hash = "sha256:626afbc86da077fb0b427a6356d86fc970ff9c25a960cef20335d47d715a1601", size = 124281, upload-time = "2026-01-29T05:22:14.312Z" },
+
+[package.metadata]
+requires-dist = [
+    { name = "datasets", specifier = ">=2.19" },
+    { name = "datashader", specifier = ">=0.16" },
+    { name = "gdspy", marker = "extra == 'gds'", specifier = ">=1.6" },
+    { name = "gitpython", marker = "extra == 'contrib'", specifier = ">=3.1" },
+    { name = "gmsh", specifier = ">=4.15.0" },
+    { name = "huggingface-hub", specifier = ">=0.21" },
+    { name = "joblib", specifier = ">=1.3" },
+    { name = "jupyter-sphinx", marker = "extra == 'docs'", specifier = ">=0.5" },
+    { name = "klayout", marker = "extra == 'gds'", specifier = ">=0.29" },
+    { name = "matplotlib", specifier = ">=3.7" },
+    { name = "myst-parser", marker = "extra == 'docs'", specifier = ">=2.0" },
+    { name = "nbsphinx", marker = "extra == 'docs'", specifier = ">=0.9" },
+    { name = "numba", specifier = ">=0.60" },
+    { name = "numpy", specifier = ">=1.16.6,<2.0" },
+    { name = "pandas", specifier = ">=1.5" },
+    { name = "plotly", specifier = ">=5.0" },
+    { name = "pre-commit", marker = "extra == 'dev'", specifier = ">=4.5.1" },
+    { name = "prettytable", specifier = ">=3.0" },
+    { name = "pyaedt", specifier = "==0.23" },
+    { name = "pydata-sphinx-theme", marker = "extra == 'docs'", specifier = ">=0.15" },
+    { name = "pyepr-quantum", specifier = ">=0.8.5" },
+    { name = "pygithub", marker = "extra == 'contrib'", specifier = ">=2.4" },
+    { name = "pyside6", specifier = ">=6.10.1" },
+    { name = "pytest", marker = "extra == 'dev'", specifier = ">=8.0" },
+    { name = "pytest-cov", marker = "extra == 'dev'", specifier = ">=4.0" },
+    { name = "python-dotenv", specifier = ">=1.0" },
+    { name = "qiskit-sphinx-theme", marker = "extra == 'docs'" },
+    { name = "quantum-metal", specifier = ">=0.5.0" },
+    { name = "reno", marker = "extra == 'docs'", specifier = ">=4.0" },
+    { name = "requests", specifier = ">=2.32" },
+    { name = "rich", specifier = ">=13.0" },
+    { name = "ruff", marker = "extra == 'dev'", specifier = ">=0.14.11" },
+    { name = "scipy", specifier = ">=1.10" },
+    { name = "scqubits", specifier = ">=4.0" },
+    { name = "seaborn", specifier = ">=0.12" },
+    { name = "shapely", specifier = ">=2.0" },
+    { name = "sphinx", marker = "extra == 'docs'", specifier = ">=7.0" },
+    { name = "sphinx-copybutton", marker = "extra == 'docs'", specifier = ">=0.5" },
+    { name = "sphinx-design", marker = "extra == 'docs'", specifier = ">=0.5" },
+    { name = "sphinxcontrib-katex", marker = "extra == 'docs'", specifier = ">=0.9" },
+    { name = "squadds", extras = ["gds", "docs", "dev", "contrib"], marker = "extra == 'all'" },
+    { name = "streamlit", specifier = ">=1.45" },
+    { name = "tabulate", specifier = ">=0.9" },
+    { name = "tqdm", specifier = ">=4.0" },
 ]
+provides-extras = ["gds", "docs", "dev", "contrib", "all"]
+
+[package.metadata.requires-dev]
+dev = [{ name = "ipykernel", specifier = ">=7.1.0" }]
 
 [[package]]
 name = "stack-data"
