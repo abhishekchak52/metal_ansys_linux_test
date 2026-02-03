@@ -24,7 +24,11 @@ exclude = [
 
 
 [tool.uv.sources]
-    quantum-metal = { path = "packages/qiskit-metal", editable = true }
-    pyEPR-quantum = { path = "packages/pyEPR", editable = true }
-    squadds = { path = "packages/SQuADDS", editable = true } # Using published release
+    quantum-metal = { git = "https://github.com/abhishekchak52/qiskit-metal", branch = "eigenmode-bugfix" }
+    pyEPR-quantum = { git = "https://github.com/abhishekchak52/pyEPR", branch = "ansys-fixes" }
+    squadds = { git = "https://github.com/abhishekchak52/SQuADDS", branch = "aedt-release-disable" } 
 
+[tool.uv]
+    override-dependencies = [
+        "pyside6>=6.8,<6.10"
+    ]
