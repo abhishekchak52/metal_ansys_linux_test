@@ -4,6 +4,8 @@ from qiskit_metal import designs, Dict, MetalGUI
 import pandas as pd
 import numpy as np
 import traceback
+from tqdm import tqdm
+from comparison_df_utils import create_comparison_dataframe
 
 ## read in ML results
 ML_results = pd.read_csv("scripts/data/NCap_cap_data.csv")
@@ -20,10 +22,15 @@ results = pd.DataFrame({"Sample":[],
                    "pred_cap_matrix":[]})
 
 um = 10**6 ## ML model is trained in SI units (m), convert back to µm  
-samples_to_test = np.unique(ML_results.sample_idx)
+
+unique_sample_idx = np.unique(ML_results.sample_idx)
+if len(unique_sample_idx) > 3:
+    samples_to_test = np.sort(unique_sample_idx)[:3]
+else: 
+    samples_to_test = np.sort(unique_sample_idx)
 
 try:
-    for sample in samples_to_test[:5]:
+    for sample in tqdm(samples_to_test):
 
         ''' current testing sample '''
         this_device = ML_results[ML_results.sample_idx == sample]
@@ -64,4 +71,5 @@ try:
 except Exception:
     traceback.print_exc()
 finally:
-    print(results) 
+    with pd.option_context('display.max_rows', None, 'display.max_columns', None):
+        print(create_comparison_dataframe(results))
