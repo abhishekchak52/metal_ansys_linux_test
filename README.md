@@ -1,62 +1,96 @@
 # Testing Quantum Metal and Ansys on Linux
 
-This repository uses [Git submodules](https://git-scm.com/book/en/v2/Git-Tools-Submodules) to maintain local copies of Quantum Metal and pyEPR for easy development and troubleshooting. Both these dependencies will be installed as editable in the project virtual environment. Use the following command to clone the repository and its submodules:
+## Prerequisites
 
-```
-git clone --recurse-submodules https://www.github.com/abhishekchak52/metal_ansys_linux_test.git
-```
+- We use `uv` to manage dependencies for this project. 
+  - First install `uv` on your system ([installation instructions here](https://docs.astral.sh/uv/getting-started/installation/)). 
+  - `uv` will manage Python and any Python dependencies for this project. Conda is not used.
+- Ensure that Ansys Electronics Desktop (AEDT) on your system. 
+  - The scripts below have been tested on Ansys 2025R2 on Windows 11 and Rocky Linux 8.1.
+  - Ensure the appropriate environment variables are set for your Ansys installation. See the pyaedt [documentation about linux support](https://aedt.docs.pyansys.com/version/stable/Getting_started/Installation.html#linux-support). `pyaedt` uses these variables to locate your Ansys installation.
 
-We use uv to manage dependencies for this project. First install `uv` on your system ([installation instructions here](https://docs.astral.sh/uv/getting-started/installation/)). 
 
-## Test Scripts
+### Python dependency management
 
-There are some test scripts to check functionality (more to be added later): 
+Sync the Python environment before running any scripts. This ensures that all the required dependencies are correctly installed in the virtual environment. Run the following command in the root of this repository: 
 
-- [lom_test.py](scripts/lom_test.py)
-
-Run them using the following command: 
-
-```sh
-uv run ./scripts/lom_test.py
+```bash
+uv sync
 ```
 
-Currently, running the script will bring up the Ansys EDT GUI. You can see the design being drawn inside of Ansys. After that, the Q3D simulation will run for a number of iterations. Finally the capacitance matrix should be printed out as a pandas DataFrame and the Ansys GUI will exit.  
+Note that any extra manually-installed packages may be affected by this command. Read more about *exact syncing* in the uv documentation [here](https://docs.astral.sh/uv/reference/cli/#uv-sync). 
 
-```
-                          bus1_connector_pad_Q1  bus2_connector_pad_Q1  ground_main_plane  pad_bot_Q1  pad_top_Q1  readout_connector_pad_Q1        
-bus1_connector_pad_Q1                 51.108579              -0.420905         -34.350276   -1.560883  -13.640273                 -0.204364        
-bus2_connector_pad_Q1                 -0.420905              55.440790         -36.740701  -14.419409   -1.849197                 -1.031396        
-ground_main_plane                    -34.350276             -36.740701         239.516767  -31.539787  -38.285971                -37.526670        
-pad_bot_Q1                            -1.560883             -14.419409         -31.539787  100.177557  -30.988633                -19.467099        
-pad_top_Q1                           -13.640273              -1.849197         -38.285971  -30.988633   89.664766                 -2.245261        
-readout_connector_pad_Q1              -0.204364              -1.031396         -37.526670  -19.467099   -2.245261                 61.534274 
-```
-Your result may differ from the one shown above, but the general structure and row/column names should be the same. 
+To update various package dependencies to their latest available version (which satisfy the constraints set by the environment specifications set in `pyproject.toml` and the dependencies listed within), run the following command from the root of this repository:
 
-
-## Test notebooks
-
-Run the following command in the root of the repository. This will open the tutorial notebooks from the qiskit-metal repo: 
-
-```
-uv run jupyter lab packages/qiskit-metal/tutorials
-```
-
-For now, I've tested the following tutorial notebooks: 
-
-- 3.3 Render your design to Ansys
-- 4.01 Capacitance and LOM
-- 4.02 Eigenmode and EPR
-
-Note that not all cells should be run in the notebooks listed above. Please follow the text instructions in the notebooks. 
-
-To update various package dependencies, run the following command from the root of this repository:
-
-```
+```bash
 uv lock -U
 ```
 
-Note that Ansys Electronics Desktop (AEDT) must be installed on your system and the appropriate environment variables should be set so that pyaedt can automatically find the installation. Please refer to the [pyaedt documention for linux support](https://aedt.docs.pyansys.com/version/stable/Getting_started/Installation.html#linux-support). 
+This will show you a summary of the version updates for various dependencies. 
 
+## Running Scripts
 
+In general, you can run the various test scripts using the following command (from the repository root):
 
+```bash
+uv run scripts/<script_name>.py
+```
+
+`uv` will run the script in the virtual environment for the project. 
+
+### Setting environment variables
+
+Some script functionality is controlled using environment variables: 
+- `QISKIT_METAL_HEADLESS`: Sets non-graphical mode for Quantum Metal. When set, this will bypass any GUI-related imports. 
+- `PYEPR_USE_PYAEDT`: Force the `pyaedt` Ansys backend for pyEPR on Windows (the legacy COM backend is used by default). On Linux, `pyaedt` is the only available backend. 
+- `PYAEDT_NON_GRAPHICAL`: Sets nongraphical mode for `pyaedt`. Run Ansys using `pyaedt` without loading the AEDT GUI. 
+
+These environment variables must be set before script execution. On Linux, it is fairly easy to set these for a single command. For example, 
+
+```bash
+ENVVAR1=value1 ENVVAR2=value2 uv run scripts/<script_name>.py
+```
+Things are slightly trickier on Windows, so we recommend setting these environment variables at the top of the script using Python instead. Add the following lines at the top of the script before running: 
+
+``` python
+# First line of script. Ensure there are no imports above this. 
+import os
+os.environ["ENVVAR1"] = "value1"
+os.environ["ENVVAR2"] = "value2"
+# The rest of the original script follows. 
+```
+
+For example, to run a script in headless mode on Linux, use the following command:
+
+```bash
+QISKIT_METAL_HEADLESS=1 PYAEDT_NON_GRAPHICAL=1 uv run scripts/<script_name>.py
+```
+### Forward Pass Validation
+
+There are three scripts, one for each ML model/SQuADDS dataset: 
+
+- [TransmonCross_cap_forward_pass.py](scripts/TransmonCross_cap_forward_pass.py): LOM analysis for transmon cross and resonator claw.
+- [NCap_cap_forward_pass.py](scripts/NCap_cap_forward_pass.py):  Interdigitated capacitor for resonator coupling. 
+- [RouteMeander_eigenmode_forward_pass.py](scripts/RouteMeander_eigenmode_forward_pass.py): EPR analysis for Xmon qubit and resonator.
+
+These scripts will print out a table comparing various design and simulation-related parameters and results upon completion. Note that the last script runs an eigenmode simulation which can be time-memory intensive. In preliminary testing, this script ran for approximately 1 hour and used ~50 GB RAM. The script may fail if it runs out of memory. 
+
+### Other Scripts
+
+Some other test scripts are also provided: 
+- [lom_test.py](scripts/lom_test.py): Minimal LOM analysis script based on Quantum Metal tutorial. 
+- [epr_test.py](scripts/epr_test.py): Minimal EPR analysis script based on Quantum Metal tutorial. 
+- [squadds_xmon_lom_test.py](scripts/squadds_xmon_lom_test.py): Minimal LOM analysis for an Xmon qubit using SQuADDS. 
+
+## Development Setup
+
+This repository uses [Git submodules](https://git-scm.com/book/en/v2/Git-Tools-Submodules) to maintain local copies of Quantum Metal, pyEPR and SQuADDS for easy development and debugging. These dependencies will be installed as editable in the project virtual environment. Use the following command to clone the repository and its submodules:
+
+```bash
+git clone --recurse-submodules https://www.github.com/abhishekchak52/metal_ansys_linux_test.git
+```
+Then switch to the `dev` branch, which installs locally cloned versions of my forks of Quantum Metal, SQuADDS and pyEPR in the virtual environment. 
+```bash
+git checkout dev
+```
+This may enable easier debugging and contribution. Note that this is not required if you only want to run the scripts. 
