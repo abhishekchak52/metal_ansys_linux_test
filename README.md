@@ -5,9 +5,15 @@
 - We use `uv` to manage dependencies for this project. 
   - First install `uv` on your system ([installation instructions here](https://docs.astral.sh/uv/getting-started/installation/)). 
   - `uv` will manage Python and any Python dependencies for this project. Conda is not used.
-- Ensure that Ansys Electronics Desktop (AEDT) on your system. 
+- Ensure that Ansys Electronics Desktop (AEDT) is installed on your system. 
   - The scripts below have been tested on Ansys 2025R2 on Windows 11 and Rocky Linux 8.1.
   - Ensure the appropriate environment variables are set for your Ansys installation. See the pyaedt [documentation about linux support](https://aedt.docs.pyansys.com/version/stable/Getting_started/Installation.html#linux-support). `pyaedt` uses these variables to locate your Ansys installation.
+
+To run the scripts and test functionality, clone the repo: 
+
+```bash
+git clone https://github.com/abhishekchak52/metal_ansys_linux_test.git
+```
 
 
 ### Python dependency management
@@ -87,7 +93,7 @@ Some other test scripts are also provided:
 This repository uses [Git submodules](https://git-scm.com/book/en/v2/Git-Tools-Submodules) to maintain local copies of Quantum Metal, pyEPR and SQuADDS for easy development and debugging. These dependencies will be installed as editable in the project virtual environment. Use the following command to clone the repository and its submodules:
 
 ```bash
-git clone --recurse-submodules https://www.github.com/abhishekchak52/metal_ansys_linux_test.git
+git clone --recurse-submodules https://github.com/abhishekchak52/metal_ansys_linux_test.git
 ```
 Then switch to the `dev` branch, which installs locally cloned versions of my forks of Quantum Metal, SQuADDS and pyEPR in the virtual environment. 
 ```bash
