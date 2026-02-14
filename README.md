@@ -5,9 +5,11 @@
 - We use `uv` to manage dependencies for this project. 
   - First install `uv` on your system ([installation instructions here](https://docs.astral.sh/uv/getting-started/installation/)). 
   - `uv` will manage Python and any Python dependencies for this project. Conda is not used.
-- Ensure that Ansys Electronics Desktop (AEDT) is installed on your system. 
+  - If your system has a global Python installation, `uv` may try to use that by default, potentially creating problems. For such cases, set the environment variable `UV_MANAGED_PYTHON` or specify the `--managed_python` flag in any `uv run` commands (see [here](https://docs.astral.sh/uv/reference/cli/#uv-run--managed-python)).
+- Ensure that Ansys Electronics Desktop (AEDT) is installed on your system and available. 
   - The scripts below have been tested on Ansys 2025R2 on Windows 11 and Rocky Linux 8.1.
   - Ensure the appropriate environment variables are set for your Ansys installation. See the pyaedt [documentation about linux support](https://aedt.docs.pyansys.com/version/stable/Getting_started/Installation.html#linux-support). `pyaedt` uses these variables to locate your Ansys installation.
+  - For HPC systems, installed software may be made available in the form of modules (typically using something like [spack](https://spack.readthedocs.io/en/latest/) or [EasyBuild](https://easybuild.io/)). In such cases, you may need to import the installed module to have access to Ansys. Please contact your HPC sysadmin to resolve issues related to Ansys installations on your HPC. 
 
 To run the scripts and test functionality, clone the repo: 
 
